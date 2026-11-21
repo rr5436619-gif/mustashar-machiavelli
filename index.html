@@ -27,6 +27,15 @@ textarea{width:100%;min-height:130px;padding:12px;border-radius:12px;border:1px 
 .sec b{display:block;color:var(--accent);margin-bottom:2px}
 .note{color:var(--mute);font-size:.8rem;margin-top:20px;text-align:center}
 .err{color:var(--accent)}
+.pay{background:var(--card);border:1px solid var(--accent);border-radius:14px;padding:14px 16px;margin-top:16px}
+.pay h3{margin:0 0 6px;color:var(--accent);font-size:1.05rem}
+.pay p{margin:4px 0}
+.buy{display:block;text-align:center;margin-top:10px;padding:12px;border-radius:12px;background:var(--accent);color:var(--btn-ink);text-decoration:none;font-weight:700}
+.keyrow{display:flex;gap:8px;margin-top:10px}
+.keyrow input{flex:1;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;direction:ltr}
+.keyrow button{padding:10px 14px;border:0;border-radius:10px;background:var(--ink);color:var(--bg);font:inherit;cursor:pointer}
+.status{color:var(--mute);font-size:.85rem;margin-top:8px;text-align:center}
+.status a{color:var(--accent)}
 </style>
 </head>
 <body>
@@ -43,7 +52,17 @@ textarea{width:100%;min-height:130px;padding:12px;border-radius:12px;border:1px 
 <button class="go" id="go">حلّل الموقف</button>
 
 <div id="out" aria-live="polite"></div>
-<p class="note">© 2026 Rabie — جميع الحقوق محفوظة<br>تحليل استراتيجي مستوحى من الكتاب، لا يشجّع على الأذى أو الغش أو مخالفة القانون.</p>
+<p class="status" id="status"></p>
+<div class="pay" id="pay" hidden>
+  <h3>اشترك في المستشار 👑</h3>
+  <p>انتهت تحليلاتك المجانية لهذا الشهر (3 تحليلات).</p>
+  <p>اشترك بـ <b>9$ شهرياً</b> وخذ حتى <b>150 تحليل</b> بالشهر. تقدر تلغي الاشتراك بأي وقت.</p>
+  <a class="buy" id="buy" href="https://buy.polar.sh/polar_cl_hfSVdRy5md9RCgwP4C7UKl5JC6i5xnm3SsLHA3A5yz6" target="_blank" rel="noopener">اشترك الآن 🔓</a>
+  <p style="font-size:.85rem;margin-top:10px">بعد الدفع بيوصلك <b>مفتاح الاشتراك</b> (يبدأ بـ MUST) بالإيميل. الصقه هون:</p>
+  <div class="keyrow"><input id="key" placeholder="MUST-XXXX-XXXX" autocomplete="off"><button id="savekey">تفعيل</button></div>
+</div>
+
+<p class="note">© 2026 Rabie — جميع الحقوق محفوظة · الدفع عبر Polar (Merchant of Record)<br>تحليل استراتيجي مستوحى من الكتاب، لا يشجّع على الأذى أو الغش أو مخالفة القانون.</p>
 </main>
 <script>
 (function(){
@@ -73,12 +92,32 @@ textarea{width:100%;min-height:130px;padding:12px;border-radius:12px;border:1px 
     });
   }
 
+  var pay=document.getElementById("pay"),status=document.getElementById("status"),keyIn=document.getElementById("key");
+  var store={get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},set:function(k,v){try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}}};
+  function showStatus(){
+    var k=store.get("must_key");
+    status.innerHTML=k?'👑 اشتراكك مفعّل · <a href="#" id="logout">إزالة المفتاح</a>':'3 تحليلات مجانية بالشهر · <a href="#" id="havekey">عندي مفتاح اشتراك</a>';
+    var lo=document.getElementById("logout"); if(lo)lo.onclick=function(e){e.preventDefault();store.set("must_key",null);showStatus()};
+    var hk=document.getElementById("havekey"); if(hk)hk.onclick=function(e){e.preventDefault();pay.hidden=false;keyIn.focus()};
+  }
+  document.getElementById("savekey").onclick=function(){
+    var k=keyIn.value.trim();
+    if(!/^MUST-/i.test(k)){keyIn.focus();return}
+    store.set("must_key",k);pay.hidden=true;showStatus();
+    if(q.value.trim())btn.click();
+  };
+  showStatus();
+
   btn.onclick=async function(){
     var text=q.value.trim();
     if(!text){q.focus();return}
     btn.disabled=true;out.innerHTML='<div class="sec">…عم يفكّر الأمير</div>';
+    var key=store.get("must_key")||"";
     try{
-      var res=await fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({field:field,text:text})});
+      var res=await fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({field:field,text:text,key:key})});
+      if(res.status===402){out.innerHTML="";pay.hidden=false;pay.scrollIntoView({behavior:"smooth"});return}
+      if(res.status===403){store.set("must_key",null);showStatus();out.innerHTML='<div class="sec err">مفتاح الاشتراك غير صالح أو انتهى الاشتراك. تأكد من المفتاح أو جدّد اشتراكك.</div>';pay.hidden=false;return}
+      if(res.status===429){out.innerHTML='<div class="sec err">وصلت للحد الشهري (150 تحليل). بيتجدد أول الشهر الجاي.</div>';return}
       if(!res.ok)throw new Error("http "+res.status);
       var r=await res.json();
       render(r.text||"");
@@ -87,6 +126,8 @@ textarea{width:100%;min-height:130px;padding:12px;border-radius:12px;border:1px 
       out.innerHTML='<div class="sec err"></div>';out.firstChild.textContent=m;
     }finally{btn.disabled=false}
   };
+  // back from the checkout: show where the key is
+  if(/checkout|customer_session/.test(location.search)){pay.hidden=false;status.textContent="✅ شكراً لاشتراكك! افتح إيميلك وانسخ مفتاح الاشتراك (MUST-…) والصقه تحت."}
 })();
 </script>
 </body>
