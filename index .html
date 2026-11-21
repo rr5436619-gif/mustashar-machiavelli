@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>المستشار — على طريقة مكيافيلي</title>
+<style>
+:root{--bg:#f6f1e7;--card:#fffaf0;--ink:#2a2118;--mute:#7a6a55;--accent:#8c2f1b;--line:#e2d6bf;--btn-ink:#fff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17120d;--card:#221b14;--ink:#f1e8d8;--mute:#a8977e;--accent:#d9694d;--line:#3a2f23}}
+:root[data-theme="dark"]{--bg:#17120d;--card:#221b14;--ink:#f1e8d8;--mute:#a8977e;--accent:#d9694d;--line:#3a2f23}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",Tahoma,"Noto Naskh Arabic",sans-serif;line-height:1.8}
+main{max-width:640px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:1.6rem;margin:8px 0 2px}
+.sub{color:var(--mute);margin:0 0 18px;font-size:.95rem}
+.quote{border-inline-start:3px solid var(--accent);padding:4px 12px;margin:0 0 20px;color:var(--mute);font-size:.9rem}
+label{display:block;font-weight:600;margin:14px 0 6px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:6px 14px;border-radius:999px;font:inherit;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--btn-ink);border-color:var(--accent)}
+textarea{width:100%;min-height:130px;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;resize:vertical}
+.go{width:100%;margin-top:14px;padding:13px;border:0;border-radius:12px;background:var(--accent);color:var(--btn-ink);font:inherit;font-weight:700;font-size:1.05rem;cursor:pointer}
+.go:disabled{opacity:.5}
+#out{margin-top:22px}
+.sec{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 16px;margin-bottom:12px;white-space:pre-wrap}
+.sec b{display:block;color:var(--accent);margin-bottom:2px}
+.note{color:var(--mute);font-size:.8rem;margin-top:20px;text-align:center}
+.err{color:var(--accent)}
+</style>
+</head>
+<body>
+<main>
+<h1>المستشار</h1>
+<p class="sub">اكتب موقفك، وخذ تحليلاً على طريقة «الأمير» لمكيافيلي.</p>
+<div class="quote">«على الحاكم أن يكون ثعلباً ليتجنّب الفخاخ، وأسداً ليُرهب الذئاب.»</div>
+
+<label>المجال</label>
+<div class="chips" id="chips"></div>
+
+<label for="q">شو الموقف؟</label>
+<textarea id="q" placeholder="مثال: شريكي بالمشروع عم يأخد قرارات لحاله وبدي أستعيد التوازن من دون ما نخسر الشراكة..."></textarea>
+<button class="go" id="go">حلّل الموقف</button>
+
+<div id="out" aria-live="polite"></div>
+<p class="note">تحليل استراتيجي مستوحى من الكتاب، لا يشجّع على الأذى أو الغش أو مخالفة القانون.</p>
+</main>
+<script>
+(function(){
+  var fields=["عمل وأعمال","علاقات وشراكات","فريق وإدارة","مجتمع وسياسة"];
+  var field=fields[0];
+  var chips=document.getElementById("chips");
+  fields.forEach(function(f,i){
+    var b=document.createElement("button");
+    b.className="chip";b.textContent=f;b.setAttribute("aria-pressed",i===0?"true":"false");
+    b.onclick=function(){field=f;[].forEach.call(chips.children,function(c){c.setAttribute("aria-pressed",c===b?"true":"false")})};
+    chips.appendChild(b);
+  });
+
+  var PROMPT="أنت مستشار استراتيجي تحلّل المواقف بعقلية نيكولو مكيافيلي في كتاب «الأمير»، وتكتب بالعربية البسيطة (لهجة بيضاء قريبة). "+
+  "مبادئك: الواقعية قبل المثالية، الحكم على الأفعال بنتائجها، أن يُخاف أفضل من أن يُحَب بشرط ألا يتحول إلى كراهية، الثعلب والأسد، الفضيلة (virtù) والحظ (fortuna)، الاستعداد للأسوأ، حماية السمعة، الحذر من المتملقين، الضربة الحاسمة الواحدة بدل الإيذاء المتكرر، الاعتماد على قوتك لا على قوة غيرك. "+
+  "اكتب الرد بهذه الأقسام بالضبط، كل قسم يبدأ بعنوانه على سطر مستقل بالشكل «## العنوان»، وكل قسم 2 إلى 4 جمل: "+
+  "## قراءة الموقف (من يملك القوة والمصلحة فعلاً) ## الخطر الأكبر ## خطوتك الذكية (التصرف الثعلبي) ## خطوتك القوية (التصرف الأسدي) ## ما يقوله الأمير (مبدأ من الكتاب مع شرح موجز). "+
+  "اجعل النصائح عملية وقابلة للتنفيذ. إذا كان الطلب يتضمن إيذاء أشخاص أو غشاً أو مخالفة قانونية، لا تساعد فيه، بل حوّل التحليل إلى بدائل مشروعة وذكية تحقق الغاية نفسها (فمكيافيلي نفسه حذّر من الكراهية والسمعة السيئة).";
+
+  var btn=document.getElementById("go"),out=document.getElementById("out"),q=document.getElementById("q");
+
+  function render(t){
+    out.innerHTML="";
+    var parts=t.split(/^## /m).filter(function(s){return s.trim()});
+    parts.forEach(function(p){
+      var i=p.indexOf("\n");
+      var title=i<0?p:p.slice(0,i), body=i<0?"":p.slice(i+1);
+      var d=document.createElement("div");d.className="sec";
+      var b=document.createElement("b");b.textContent=title.trim();
+      d.appendChild(b);d.appendChild(document.createTextNode(body.trim()));
+      out.appendChild(d);
+    });
+  }
+
+  btn.onclick=async function(){
+    var text=q.value.trim();
+    if(!text){q.focus();return}
+    btn.disabled=true;out.innerHTML='<div class="sec">…عم يفكّر الأمير</div>';
+    try{
+      var sample=await claude.use("sample");
+      if(!sample){out.innerHTML='<div class="sec err">خاصية الذكاء الاصطناعي غير متاحة بهذا العرض.</div>';return}
+      var r=await sample(PROMPT+"\n\nالمجال: "+field+"\nالموقف:\n"+text,{cache:false,modelTier:"default",onText:function(o){render(o.text)}});
+      render(r.text);
+    }catch(e){
+      var m=e&&e.code==="not_granted"?"لازم توافق على الصلاحية لتشتغل الأداة.":e&&e.code==="rate_limited"?"كتير طلبات، جرّب بعد شوي.":"صار خطأ، جرّب مرة ثانية.";
+      out.innerHTML='<div class="sec err"></div>';out.firstChild.textContent=m;
+    }finally{btn.disabled=false}
+  };
+})();
+</script>
+</body>
+</html>
