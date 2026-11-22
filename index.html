@@ -41,14 +41,14 @@ textarea{width:100%;min-height:130px;padding:12px;border-radius:12px;border:1px 
 <body>
 <main>
 <h1>المستشار</h1>
-<p class="sub">اكتب موقفك، وخذ تحليلاً على طريقة «الأمير» لمكيافيلي.</p>
+<p class="sub">اكتب موقفك، واحصل على تحليل على طريقة «الأمير» لمكيافيلي.</p>
 <div class="quote">«على الحاكم أن يكون ثعلباً ليتجنّب الفخاخ، وأسداً ليُرهب الذئاب.»</div>
 
 <label>المجال</label>
 <div class="chips" id="chips"></div>
 
-<label for="q">شو الموقف؟</label>
-<textarea id="q" placeholder="مثال: شريكي بالمشروع عم يأخد قرارات لحاله وبدي أستعيد التوازن من دون ما نخسر الشراكة..."></textarea>
+<label for="q">ما هو موقفك؟</label>
+<textarea id="q" placeholder="مثال: شريكي في المشروع يتخذ القرارات وحده، وأريد استعادة التوازن دون أن نخسر الشراكة..."></textarea>
 <button class="go" id="go">حلّل الموقف</button>
 
 <div id="out" aria-live="polite"></div>
@@ -56,9 +56,9 @@ textarea{width:100%;min-height:130px;padding:12px;border-radius:12px;border:1px 
 <div class="pay" id="pay" hidden>
   <h3>اشترك في المستشار 👑</h3>
   <p>انتهت تحليلاتك المجانية لهذا الشهر (3 تحليلات).</p>
-  <p>اشترك بـ <b>9$ شهرياً</b> وخذ حتى <b>150 تحليل</b> بالشهر. تقدر تلغي الاشتراك بأي وقت.</p>
+  <p>اشترك بـ <b>9$ شهرياً</b> واحصل على ما يصل إلى <b>150 تحليلاً</b> في الشهر. يمكنك إلغاء الاشتراك في أي وقت.</p>
   <a class="buy" id="buy" href="https://buy.polar.sh/polar_cl_hfSVdRy5md9RCgwP4C7UKl5JC6i5xnm3SsLHA3A5yz6" target="_blank" rel="noopener">اشترك الآن 🔓</a>
-  <p style="font-size:.85rem;margin-top:10px">بعد الدفع بيوصلك <b>مفتاح الاشتراك</b> (يبدأ بـ MUST) بالإيميل. الصقه هون:</p>
+  <p style="font-size:.85rem;margin-top:10px">بعد الدفع يصلك <b>مفتاح الاشتراك</b> (يبدأ بـ MUST) على بريدك الإلكتروني. ألصقه هنا:</p>
   <div class="keyrow"><input id="key" placeholder="MUST-XXXX-XXXX" autocomplete="off"><button id="savekey">تفعيل</button></div>
 </div>
 
@@ -96,7 +96,7 @@ textarea{width:100%;min-height:130px;padding:12px;border-radius:12px;border:1px 
   var store={get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},set:function(k,v){try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}}};
   function showStatus(){
     var k=store.get("must_key");
-    status.innerHTML=k?'👑 اشتراكك مفعّل · <a href="#" id="logout">إزالة المفتاح</a>':'3 تحليلات مجانية بالشهر · <a href="#" id="havekey">عندي مفتاح اشتراك</a>';
+    status.innerHTML=k?'👑 اشتراكك مفعّل · <a href="#" id="logout">إزالة المفتاح</a>':'3 تحليلات مجانية في الشهر · <a href="#" id="havekey">عندي مفتاح اشتراك</a>';
     var lo=document.getElementById("logout"); if(lo)lo.onclick=function(e){e.preventDefault();store.set("must_key",null);showStatus()};
     var hk=document.getElementById("havekey"); if(hk)hk.onclick=function(e){e.preventDefault();pay.hidden=false;keyIn.focus()};
   }
@@ -111,23 +111,23 @@ textarea{width:100%;min-height:130px;padding:12px;border-radius:12px;border:1px 
   btn.onclick=async function(){
     var text=q.value.trim();
     if(!text){q.focus();return}
-    btn.disabled=true;out.innerHTML='<div class="sec">…عم يفكّر الأمير</div>';
+    btn.disabled=true;out.innerHTML='<div class="sec">الأمير يفكّر…</div>';
     var key=store.get("must_key")||"";
     try{
       var res=await fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({field:field,text:text,key:key})});
       if(res.status===402){out.innerHTML="";pay.hidden=false;pay.scrollIntoView({behavior:"smooth"});return}
       if(res.status===403){store.set("must_key",null);showStatus();out.innerHTML='<div class="sec err">مفتاح الاشتراك غير صالح أو انتهى الاشتراك. تأكد من المفتاح أو جدّد اشتراكك.</div>';pay.hidden=false;return}
-      if(res.status===429){out.innerHTML='<div class="sec err">وصلت للحد الشهري (150 تحليل). بيتجدد أول الشهر الجاي.</div>';return}
+      if(res.status===429){out.innerHTML='<div class="sec err">وصلت إلى الحد الشهري (150 تحليلاً). يتجدّد في بداية الشهر القادم.</div>';return}
       if(!res.ok)throw new Error("http "+res.status);
       var r=await res.json();
       render(r.text||"");
     }catch(e){
-      var m="صار خطأ بالاتصال، جرّب مرة ثانية.";
+      var m="حدث خطأ في الاتصال، حاول مرة أخرى.";
       out.innerHTML='<div class="sec err"></div>';out.firstChild.textContent=m;
     }finally{btn.disabled=false}
   };
   // back from the checkout: show where the key is
-  if(/checkout|customer_session/.test(location.search)){pay.hidden=false;status.textContent="✅ شكراً لاشتراكك! افتح إيميلك وانسخ مفتاح الاشتراك (MUST-…) والصقه تحت."}
+  if(/checkout|customer_session/.test(location.search)){pay.hidden=false;status.textContent="✅ شكراً لاشتراكك! افتح بريدك الإلكتروني وانسخ مفتاح الاشتراك (MUST-…) وألصقه في الأسفل."}
 })();
 </script>
 </body>
