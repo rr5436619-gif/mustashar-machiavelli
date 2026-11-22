@@ -12,10 +12,15 @@
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",Tahoma,"Noto Naskh Arabic",sans-serif;line-height:1.8}
 main{max-width:640px;margin:0 auto;padding:20px 16px 40px}
+.top{display:flex;justify-content:flex-end;margin-bottom:4px}
+.lang{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:2px 4px 2px 10px;font-size:.9rem;cursor:pointer}
+[dir="rtl"] .lang{padding:2px 10px 2px 4px}
+.lang select{border:0;background:transparent;color:var(--ink);font:inherit;padding:4px 2px;cursor:pointer}
 h1{font-size:1.6rem;margin:8px 0 2px}
 .sub{color:var(--mute);margin:0 0 18px;font-size:.95rem}
 .quote{border-inline-start:3px solid var(--accent);padding:4px 12px;margin:0 0 20px;color:var(--mute);font-size:.9rem}
 label{display:block;font-weight:600;margin:14px 0 6px}
+.top label{margin:0;font-weight:400}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:6px 14px;border-radius:999px;font:inherit;cursor:pointer}
 .chip[aria-pressed="true"]{background:var(--accent);color:var(--btn-ink);border-color:var(--accent)}
@@ -40,94 +45,201 @@ textarea{width:100%;min-height:130px;padding:12px;border-radius:12px;border:1px 
 </head>
 <body>
 <main>
-<h1>المستشار</h1>
-<p class="sub">اكتب موقفك، واحصل على تحليل على طريقة «الأمير» لمكيافيلي.</p>
-<div class="quote">«على الحاكم أن يكون ثعلباً ليتجنّب الفخاخ، وأسداً ليُرهب الذئاب.»</div>
+<div class="top">
+<label class="lang" title="Language"><span aria-hidden="true">🌐</span>
+<select id="lang" aria-label="Language / اللغة">
+<option value="ar">العربية</option>
+<option value="en">English</option>
+<option value="de">Deutsch</option>
+<option value="es">Español</option>
+</select></label>
+</div>
+<h1 data-t="name">المستشار</h1>
+<p class="sub" data-t="sub">اكتب موقفك، واحصل على تحليل على طريقة «الأمير» لمكيافيلي.</p>
+<div class="quote" data-t="quote">«على الحاكم أن يكون ثعلباً ليتجنّب الفخاخ، وأسداً ليُرهب الذئاب.»</div>
 
-<label>المجال</label>
+<label data-t="fieldLabel">المجال</label>
 <div class="chips" id="chips"></div>
 
-<label for="q">ما هو موقفك؟</label>
+<label for="q" data-t="qLabel">ما هو موقفك؟</label>
 <textarea id="q" placeholder="مثال: شريكي في المشروع يتخذ القرارات وحده، وأريد استعادة التوازن دون أن نخسر الشراكة..."></textarea>
-<button class="go" id="go">حلّل الموقف</button>
+<button class="go" id="go" data-t="go">حلّل الموقف</button>
 
 <div id="out" aria-live="polite"></div>
 <p class="status" id="status"></p>
 <div class="pay" id="pay" hidden>
-  <h3>اشترك في المستشار 👑</h3>
-  <p>انتهت تحليلاتك المجانية لهذا الشهر (3 تحليلات).</p>
-  <p>اشترك بـ <b>9$ شهرياً</b> واحصل على ما يصل إلى <b>150 تحليلاً</b> في الشهر. يمكنك إلغاء الاشتراك في أي وقت.</p>
-  <a class="buy" id="buy" href="https://buy.polar.sh/polar_cl_hfSVdRy5md9RCgwP4C7UKl5JC6i5xnm3SsLHA3A5yz6" target="_blank" rel="noopener">اشترك الآن 🔓</a>
-  <p style="font-size:.85rem;margin-top:10px">بعد الدفع يصلك <b>مفتاح الاشتراك</b> (يبدأ بـ MUST) على بريدك الإلكتروني. ألصقه هنا:</p>
-  <div class="keyrow"><input id="key" placeholder="MUST-XXXX-XXXX" autocomplete="off"><button id="savekey">تفعيل</button></div>
+<h3 data-t="payH">اشترك في المستشار 👑</h3>
+<p data-t="payP1">انتهت تحليلاتك المجانية لهذا الشهر (3 تحليلات).</p>
+<p data-h="payP2">اشترك بـ <b>9$ شهرياً</b> واحصل على ما يصل إلى <b>150 تحليلاً</b> في الشهر. يمكنك إلغاء الاشتراك في أي وقت.</p>
+<a class="buy" id="buy" href="https://buy.polar.sh/polar_cl_hfSVdRy5md9RCgwP4C7UKl5JC6i5xnm3SsLHA3A5yz6" target="_blank" rel="noopener" data-t="buy">اشترك الآن 🔓</a>
+<p style="font-size:.85rem;margin-top:10px" data-h="keyHint">بعد الدفع يصلك <b>مفتاح الاشتراك</b> (يبدأ بـ MUST) على بريدك الإلكتروني. ألصقه هنا:</p>
+<div class="keyrow"><input id="key" placeholder="MUST-XXXX-XXXX" autocomplete="off"><button id="savekey" data-t="activate">تفعيل</button></div>
 </div>
 
-<p class="note">© 2026 Rabie — جميع الحقوق محفوظة · الدفع عبر Polar (Merchant of Record)<br>تحليل استراتيجي مستوحى من الكتاب، لا يشجّع على الأذى أو الغش أو مخالفة القانون.</p>
+<p class="note" data-h="note">© 2026 Rabie — جميع الحقوق محفوظة · الدفع عبر Polar (Merchant of Record)<br>تحليل استراتيجي مستوحى من الكتاب، لا يشجّع على الأذى أو الغش أو مخالفة القانون.</p>
 </main>
 <script>
 (function(){
-    var WORKER_URL="https://morning-tooth-82c0.aluts2002.workers.dev";
-  var fields=["عمل وأعمال","علاقات وشراكات","فريق وإدارة","مجتمع وسياسة"];
-  var field=fields[0];
-  var chips=document.getElementById("chips");
-  fields.forEach(function(f,i){
-    var b=document.createElement("button");
-    b.className="chip";b.textContent=f;b.setAttribute("aria-pressed",i===0?"true":"false");
-    b.onclick=function(){field=f;[].forEach.call(chips.children,function(c){c.setAttribute("aria-pressed",c===b?"true":"false")})};
-    chips.appendChild(b);
-  });
+var WORKER_URL="https://morning-tooth-82c0.aluts2002.workers.dev";
+// Field values sent to the server stay in Arabic; only the labels change.
+var fields=["عمل وأعمال","علاقات وشراكات","فريق وإدارة","مجتمع وسياسة"];
 
-  var btn=document.getElementById("go"),out=document.getElementById("out"),q=document.getElementById("q");
+var T={
+ar:{dir:"rtl",title:"المستشار — على طريقة مكيافيلي",name:"المستشار",
+sub:"اكتب موقفك، واحصل على تحليل على طريقة «الأمير» لمكيافيلي.",
+quote:"«على الحاكم أن يكون ثعلباً ليتجنّب الفخاخ، وأسداً ليُرهب الذئاب.»",
+fieldLabel:"المجال",fields:["عمل وأعمال","علاقات وشراكات","فريق وإدارة","مجتمع وسياسة"],
+qLabel:"ما هو موقفك؟",ph:"مثال: شريكي في المشروع يتخذ القرارات وحده، وأريد استعادة التوازن دون أن نخسر الشراكة...",
+go:"حلّل الموقف",thinking:"الأمير يفكّر…",
+payH:"اشترك في المستشار 👑",payP1:"انتهت تحليلاتك المجانية لهذا الشهر (3 تحليلات).",
+payP2:"اشترك بـ <b>9$ شهرياً</b> واحصل على ما يصل إلى <b>150 تحليلاً</b> في الشهر. يمكنك إلغاء الاشتراك في أي وقت.",
+buy:"اشترك الآن 🔓",keyHint:"بعد الدفع يصلك <b>مفتاح الاشتراك</b> (يبدأ بـ MUST) على بريدك الإلكتروني. ألصقه هنا:",
+activate:"تفعيل",active:"👑 اشتراكك مفعّل",removeKey:"إزالة المفتاح",free:"3 تحليلات مجانية في الشهر",haveKey:"عندي مفتاح اشتراك",
+badKey:"مفتاح الاشتراك غير صالح أو انتهى الاشتراك. تأكد من المفتاح أو جدّد اشتراكك.",
+limit:"وصلت إلى الحد الشهري (150 تحليلاً). يتجدّد في بداية الشهر القادم.",
+netErr:"حدث خطأ في الاتصال، حاول مرة أخرى.",
+thanks:"✅ شكراً لاشتراكك! افتح بريدك الإلكتروني وانسخ مفتاح الاشتراك (MUST-…) وألصقه في الأسفل.",
+note:"© 2026 Rabie — جميع الحقوق محفوظة · الدفع عبر Polar (Merchant of Record)<br>تحليل استراتيجي مستوحى من الكتاب، لا يشجّع على الأذى أو الغش أو مخالفة القانون.",
+instr:""},
+en:{dir:"ltr",title:"Al-Mustashar — The Machiavelli Way",name:"Al-Mustashar",
+sub:"Describe your situation and get an analysis in the style of Machiavelli’s “The Prince”.",
+quote:"“A prince must be a fox to recognize traps, and a lion to frighten wolves.”",
+fieldLabel:"Area",fields:["Work & Business","Relationships & Partnerships","Team & Management","Society & Politics"],
+qLabel:"What is your situation?",ph:"Example: My business partner makes decisions alone, and I want to restore the balance without losing the partnership...",
+go:"Analyze the situation",thinking:"The Prince is thinking…",
+payH:"Subscribe to Al-Mustashar 👑",payP1:"You have used your free analyses for this month (3 analyses).",
+payP2:"Subscribe for <b>$9/month</b> and get up to <b>150 analyses</b> per month. Cancel anytime.",
+buy:"Subscribe now 🔓",keyHint:"After payment, you will receive your <b>subscription key</b> (starting with MUST) by email. Paste it here:",
+activate:"Activate",active:"👑 Your subscription is active",removeKey:"Remove key",free:"3 free analyses per month",haveKey:"I have a subscription key",
+badKey:"The subscription key is invalid or the subscription has expired. Check the key or renew your subscription.",
+limit:"You have reached the monthly limit (150 analyses). It renews at the start of next month.",
+netErr:"Connection error, please try again.",
+thanks:"✅ Thank you for subscribing! Open your email, copy your subscription key (MUST-…) and paste it below.",
+note:"© 2026 Rabie — All rights reserved · Payments via Polar (Merchant of Record)<br>Strategic analysis inspired by the book. It does not encourage harm, fraud, or breaking the law.",
+instr:"Important: write your entire answer, including every section heading, in English."},
+de:{dir:"ltr",title:"Al-Mustashar — Nach Machiavelli",name:"Al-Mustashar",
+sub:"Beschreibe deine Situation und erhalte eine Analyse im Stil von Machiavellis „Der Fürst“.",
+quote:"„Ein Fürst muss ein Fuchs sein, um die Fallen zu erkennen, und ein Löwe, um die Wölfe zu schrecken.“",
+fieldLabel:"Bereich",fields:["Arbeit & Geschäft","Beziehungen & Partnerschaften","Team & Führung","Gesellschaft & Politik"],
+qLabel:"Was ist deine Situation?",ph:"Beispiel: Mein Geschäftspartner trifft Entscheidungen allein, und ich möchte das Gleichgewicht wiederherstellen, ohne die Partnerschaft zu verlieren...",
+go:"Situation analysieren",thinking:"Der Fürst denkt nach…",
+payH:"Al-Mustashar abonnieren 👑",payP1:"Deine kostenlosen Analysen für diesen Monat sind aufgebraucht (3 Analysen).",
+payP2:"Abonniere für <b>9 $ pro Monat</b> und erhalte bis zu <b>150 Analysen</b> im Monat. Jederzeit kündbar.",
+buy:"Jetzt abonnieren 🔓",keyHint:"Nach der Zahlung erhältst du deinen <b>Abo-Schlüssel</b> (beginnt mit MUST) per E-Mail. Füge ihn hier ein:",
+activate:"Aktivieren",active:"👑 Dein Abo ist aktiv",removeKey:"Schlüssel entfernen",free:"3 kostenlose Analysen pro Monat",haveKey:"Ich habe einen Abo-Schlüssel",
+badKey:"Der Abo-Schlüssel ist ungültig oder das Abo ist abgelaufen. Prüfe den Schlüssel oder verlängere dein Abo.",
+limit:"Du hast das Monatslimit erreicht (150 Analysen). Es wird zu Beginn des nächsten Monats erneuert.",
+netErr:"Verbindungsfehler, bitte versuche es erneut.",
+thanks:"✅ Danke für dein Abo! Öffne deine E-Mails, kopiere deinen Abo-Schlüssel (MUST-…) und füge ihn unten ein.",
+note:"© 2026 Rabie — Alle Rechte vorbehalten · Zahlung über Polar (Merchant of Record)<br>Strategische Analyse, inspiriert vom Buch. Sie ermutigt nicht zu Schaden, Betrug oder Rechtsverstößen.",
+instr:"Wichtig: Schreibe deine gesamte Antwort, einschließlich aller Abschnittsüberschriften, auf Deutsch."},
+es:{dir:"ltr",title:"Al-Mustashar — Al estilo de Maquiavelo",name:"Al-Mustashar",
+sub:"Describe tu situación y recibe un análisis al estilo de «El Príncipe» de Maquiavelo.",
+quote:"«Un príncipe debe ser zorro para conocer las trampas y león para espantar a los lobos.»",
+fieldLabel:"Ámbito",fields:["Trabajo y negocios","Relaciones y sociedades","Equipo y gestión","Sociedad y política"],
+qLabel:"¿Cuál es tu situación?",ph:"Ejemplo: Mi socio toma decisiones solo y quiero recuperar el equilibrio sin perder la sociedad...",
+go:"Analizar la situación",thinking:"El Príncipe está pensando…",
+payH:"Suscríbete a Al-Mustashar 👑",payP1:"Has agotado tus análisis gratuitos de este mes (3 análisis).",
+payP2:"Suscríbete por <b>9 $ al mes</b> y obtén hasta <b>150 análisis</b> al mes. Cancela cuando quieras.",
+buy:"Suscribirse ahora 🔓",keyHint:"Después del pago recibirás tu <b>clave de suscripción</b> (empieza por MUST) por correo electrónico. Pégala aquí:",
+activate:"Activar",active:"👑 Tu suscripción está activa",removeKey:"Quitar clave",free:"3 análisis gratuitos al mes",haveKey:"Tengo una clave de suscripción",
+badKey:"La clave de suscripción no es válida o la suscripción ha caducado. Comprueba la clave o renueva tu suscripción.",
+limit:"Has alcanzado el límite mensual (150 análisis). Se renueva al comienzo del próximo mes.",
+netErr:"Error de conexión, inténtalo de nuevo.",
+thanks:"✅ ¡Gracias por suscribirte! Abre tu correo, copia tu clave de suscripción (MUST-…) y pégala abajo.",
+note:"© 2026 Rabie — Todos los derechos reservados · Pagos a través de Polar (Merchant of Record)<br>Análisis estratégico inspirado en el libro. No fomenta el daño, el fraude ni el incumplimiento de la ley.",
+instr:"Importante: escribe toda tu respuesta, incluidos todos los títulos de las secciones, en español."}
+};
 
-  function render(t){
-    out.innerHTML="";
-    var parts=t.split(/^## /m).filter(function(s){return s.trim()});
-    parts.forEach(function(p){
-      var i=p.indexOf("\n");
-      var title=i<0?p:p.slice(0,i), body=i<0?"":p.slice(i+1);
-      var d=document.createElement("div");d.className="sec";
-      var b=document.createElement("b");b.textContent=title.trim();
-      d.appendChild(b);d.appendChild(document.createTextNode(body.trim()));
-      out.appendChild(d);
-    });
-  }
+var store={get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},set:function(k,v){try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}}};
 
-  var pay=document.getElementById("pay"),status=document.getElementById("status"),keyIn=document.getElementById("key");
-  var store={get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},set:function(k,v){try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}}};
-  function showStatus(){
-    var k=store.get("must_key");
-    status.innerHTML=k?'👑 اشتراكك مفعّل · <a href="#" id="logout">إزالة المفتاح</a>':'3 تحليلات مجانية في الشهر · <a href="#" id="havekey">عندي مفتاح اشتراك</a>';
-    var lo=document.getElementById("logout"); if(lo)lo.onclick=function(e){e.preventDefault();store.set("must_key",null);showStatus()};
-    var hk=document.getElementById("havekey"); if(hk)hk.onclick=function(e){e.preventDefault();pay.hidden=false;keyIn.focus()};
-  }
-  document.getElementById("savekey").onclick=function(){
-    var k=keyIn.value.trim();
-    if(!/^MUST-/i.test(k)){keyIn.focus();return}
-    store.set("must_key",k);pay.hidden=true;showStatus();
-    if(q.value.trim())btn.click();
-  };
-  showStatus();
+var lang=store.get("must_lang");
+if(!T[lang]){
+var urlLang=(location.search.match(/[?&]lang=(ar|en|de|es)/)||[])[1];
+lang=urlLang||"ar";
+}
+var L=T[lang];
+var fieldIndex=0;
 
-  btn.onclick=async function(){
-    var text=q.value.trim();
-    if(!text){q.focus();return}
-    btn.disabled=true;out.innerHTML='<div class="sec">الأمير يفكّر…</div>';
-    var key=store.get("must_key")||"";
-    try{
-      var res=await fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({field:field,text:text,key:key})});
-      if(res.status===402){out.innerHTML="";pay.hidden=false;pay.scrollIntoView({behavior:"smooth"});return}
-      if(res.status===403){store.set("must_key",null);showStatus();out.innerHTML='<div class="sec err">مفتاح الاشتراك غير صالح أو انتهى الاشتراك. تأكد من المفتاح أو جدّد اشتراكك.</div>';pay.hidden=false;return}
-      if(res.status===429){out.innerHTML='<div class="sec err">وصلت إلى الحد الشهري (150 تحليلاً). يتجدّد في بداية الشهر القادم.</div>';return}
-      if(!res.ok)throw new Error("http "+res.status);
-      var r=await res.json();
-      render(r.text||"");
-    }catch(e){
-      var m="حدث خطأ في الاتصال، حاول مرة أخرى.";
-      out.innerHTML='<div class="sec err"></div>';out.firstChild.textContent=m;
-    }finally{btn.disabled=false}
-  };
-  // back from the checkout: show where the key is
-  if(/checkout|customer_session/.test(location.search)){pay.hidden=false;status.textContent="✅ شكراً لاشتراكك! افتح بريدك الإلكتروني وانسخ مفتاح الاشتراك (MUST-…) وألصقه في الأسفل."}
+var chips=document.getElementById("chips");
+function renderChips(){
+chips.innerHTML="";
+L.fields.forEach(function(f,i){
+var b=document.createElement("button");
+b.className="chip";b.textContent=f;b.setAttribute("aria-pressed",i===fieldIndex?"true":"false");
+b.onclick=function(){fieldIndex=i;[].forEach.call(chips.children,function(c){c.setAttribute("aria-pressed",c===b?"true":"false")})};
+chips.appendChild(b);
+});
+}
+
+var btn=document.getElementById("go"),out=document.getElementById("out"),q=document.getElementById("q");
+
+function render(t){
+out.innerHTML="";
+var parts=t.split(/^## /m).filter(function(s){return s.trim()});
+parts.forEach(function(p){
+var i=p.indexOf("\n");
+var title=i<0?p:p.slice(0,i), body=i<0?"":p.slice(i+1);
+var d=document.createElement("div");d.className="sec";
+var b=document.createElement("b");b.textContent=title.trim();
+d.appendChild(b);d.appendChild(document.createTextNode(body.trim()));
+out.appendChild(d);
+});
+}
+
+var pay=document.getElementById("pay"),status=document.getElementById("status"),keyIn=document.getElementById("key");
+function showStatus(){
+var k=store.get("must_key");
+status.innerHTML=k?L.active+' · <a href="#" id="logout">'+L.removeKey+'</a>':L.free+' · <a href="#" id="havekey">'+L.haveKey+'</a>';
+var lo=document.getElementById("logout"); if(lo)lo.onclick=function(e){e.preventDefault();store.set("must_key",null);showStatus()};
+var hk=document.getElementById("havekey"); if(hk)hk.onclick=function(e){e.preventDefault();pay.hidden=false;keyIn.focus()};
+}
+
+var sel=document.getElementById("lang");
+function applyLang(code){
+lang=code;L=T[code];
+document.documentElement.lang=code;
+document.documentElement.dir=L.dir;
+document.title=L.title;
+[].forEach.call(document.querySelectorAll("[data-t]"),function(el){el.textContent=L[el.getAttribute("data-t")]});
+[].forEach.call(document.querySelectorAll("[data-h]"),function(el){el.innerHTML=L[el.getAttribute("data-h")]});
+q.placeholder=L.ph;
+q.dir="auto";
+sel.value=code;
+renderChips();
+showStatus();
+}
+sel.onchange=function(){store.set("must_lang",sel.value);applyLang(sel.value)};
+
+document.getElementById("savekey").onclick=function(){
+var k=keyIn.value.trim();
+if(!/^MUST-/i.test(k)){keyIn.focus();return}
+store.set("must_key",k);pay.hidden=true;showStatus();
+if(q.value.trim())btn.click();
+};
+applyLang(lang);
+
+btn.onclick=async function(){
+var text=q.value.trim();
+if(!text){q.focus();return}
+btn.disabled=true;out.innerHTML="";
+var w=document.createElement("div");w.className="sec";w.textContent=L.thinking;out.appendChild(w);
+var key=store.get("must_key")||"";
+var sendText=L.instr?text+"\n\n("+L.instr+")":text;
+try{
+var res=await fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({field:fields[fieldIndex],text:sendText,key:key,lang:lang})});
+if(res.status===402){out.innerHTML="";pay.hidden=false;pay.scrollIntoView({behavior:"smooth"});return}
+if(res.status===403){store.set("must_key",null);showStatus();out.innerHTML='<div class="sec err"></div>';out.firstChild.textContent=L.badKey;pay.hidden=false;return}
+if(res.status===429){out.innerHTML='<div class="sec err"></div>';out.firstChild.textContent=L.limit;return}
+if(!res.ok)throw new Error("http "+res.status);
+var r=await res.json();
+render(r.text||"");
+}catch(e){
+out.innerHTML='<div class="sec err"></div>';out.firstChild.textContent=L.netErr;
+}finally{btn.disabled=false}
+};
+// back from the checkout: show where the key is
+if(/checkout|customer_session/.test(location.search)){pay.hidden=false;status.textContent=L.thanks}
 })();
 </script>
 </body>
